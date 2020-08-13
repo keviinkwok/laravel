@@ -1,5 +1,10 @@
 @extends('adminlte.master')
 
+@push('script-head')
+{{-- <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> --}}
+<script src="//cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+@endpush
+
 @section('content')
 <div class="content mt-3">
     <div class="animated fadeIn">
@@ -9,15 +14,14 @@
                     <strong>Create Question</strong>
                 </div>
                 <div class="float-right">
-                    <a href="{{ url('question') }}"
-                        class="btn btn-danger btn-sm">
+                    <a href="{{ url('question') }}" class="btn btn-danger btn-sm">
                         Back
                     </a>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4 offset-md-4">
+                    <div class="col-md-12">
                         <form action="{{ url('question') }}" method="POST">
                             @csrf
                             <div class="form-group">
@@ -26,20 +30,22 @@
                                  is-invalid @enderror" value="{{ old('judul') }}" autofocus autocomplete="off">
 
                                 @error('judul')
-                                    <div class="invalid-feedback"> {{$message}} </div>
+                                <div class="invalid-feedback"> {{ $message }} </div>
                                 @enderror
                             </div>
 
                             <div class="form-group">
                                 <label>Isi</label>
-                                <textarea name="isi" class="form-control @error('isi')
-                                 is-invalid @enderror" autocomplete="off"> {{ old('isi') }} </textarea>
-
-                                @error('isi')
-                                    <div class="invalid-feedback"> {{$message}} </div>
-                                @enderror
+                                <textarea id="my-editor" name="isi" class="form-control">{!! old('isi', 'test editor content') !!}</textarea>
+                                {{-- <textarea name="content" class="form-control my-editor">{!! old('content', $content ?? '') !!}</textarea> --}}
                             </div>
-                            
+
+                            <div class="form-group">
+                              <label>Tags</label>
+                              <input type="text" class="form-control" id="tags" name="tags" 
+                              value="{{old('tags', '')}}" placeholder="Input Tags">
+                            </div>
+
                             <button type="submit" class="btn btn-success">Save</button>
                         </form>
                     </div>
@@ -50,3 +56,53 @@
 
 </div><!-- .content -->
 @endsection
+
+@push('scripts')
+{{-- <script>
+    var editor_config = {
+      path_absolute : "/",
+      selector: "textarea.my-editor",
+      plugins: [
+        "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+        "searchreplace wordcount visualblocks visualchars code fullscreen",
+        "insertdatetime media nonbreaking save table contextmenu directionality",
+        "emoticons template paste textcolor colorpicker textpattern"
+      ],
+      toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media",
+      relative_urls: false,
+      file_browser_callback : function(field_name, url, type, win) {
+        var x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+        var y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
+  
+        var cmsURL = editor_config.path_absolute + 'laravel-filemanager?field_name=' + field_name;
+        if (type == 'image') {
+          cmsURL = cmsURL + "&type=Images";
+        } else {
+          cmsURL = cmsURL + "&type=Files";
+        }
+  
+        tinyMCE.activeEditor.windowManager.open({
+          file : cmsURL,
+          title : 'Filemanager',
+          width : x * 0.8,
+          height : y * 0.8,
+          resizable : "yes",
+          close_previous : "no"
+        });
+      }
+    };
+  
+    tinymce.init(editor_config);
+  </script> --}}
+
+  <script>
+    var options = {
+      filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+      filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+      filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+      filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+    };
+    CKEDITOR.replace('my-editor', options);
+  </script>
+
+@endpush

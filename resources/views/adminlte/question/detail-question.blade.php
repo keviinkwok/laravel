@@ -24,7 +24,17 @@
                     </div>
                     <div class="card-body table-responsive">
                         <h1>{{ $question->judul }}</h1>
-                        <p>{{ $question->isi }}</p>
+                        <h5>Author : {{ $question->author->name}}</h5>
+                        <p>{!! $question->isi !!}</p>
+                        <div>
+                            Tags :
+                            @foreach ($question->tags as $tag)
+                                <button class="btn btn-primary btn-sm">
+                                    {{$tag->tag}}
+                                </button>
+                            @endforeach
+                        </div>
+
                     </div>
                 </div>
             </div>
